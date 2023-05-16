@@ -9,13 +9,14 @@ function initMap(): void {
     document.getElementById("map") as HTMLElement,
     {
       zoom: 4,
-      center: { lat: -24.345, lng: 134.46 }, // Australia.
+      center: { lat: 1.31895, lng: 203.89445 },
+
     }
   );
 
   const directionsService = new google.maps.DirectionsService();
   const directionsRenderer = new google.maps.DirectionsRenderer({
-    draggable: true,
+    draggable: false,
     map,
     panel: document.getElementById("panel") as HTMLElement,
   });
@@ -29,16 +30,17 @@ function initMap(): void {
   });
 
   displayRoute(
-    "Perth, WA",
-    "Sydney, NSW",
+    {location: {lat: 1.31895, lng: 103.89445}}, //origin
+    {location: {lat: 1.31895, lng: 103.89445}}, //destination
     directionsService,
     directionsRenderer
   );
 }
 
+
 function displayRoute(
-  origin: string,
-  destination: string,
+  origin: google.maps.Place,
+  destination: google.maps.Place,
   service: google.maps.DirectionsService,
   display: google.maps.DirectionsRenderer
 ) {
@@ -47,8 +49,21 @@ function displayRoute(
       origin: origin,
       destination: destination,
       waypoints: [
-        { location: "Adelaide, SA" },
-        { location: "Broken Hill, NSW" },
+        { location: { lat: 1.3702, lng: 103.87204 } },
+        { location: { lat: 1.3702, lng: 103.87204 } },
+        { location: { lat: 1.37256, lng: 103.87571 } },
+        { location: { lat: 1.35402, lng: 103.86425 } },
+        { location: { lat: 1.3718, lng: 103.84778 } },
+        { location: { lat: 1.3718, lng: 103.84778 } },
+        { location: { lat: 1.37589, lng: 103.85562 } },
+        { location: { lat: 1.3718, lng: 103.84778 } },
+        { location: { lat: 1.3718, lng: 103.84778 } },
+        { location: { lat: 1.37792, lng: 103.87541 } },
+        { location: { lat: 1.37688, lng: 103.84729 } },
+        { location: { lat: 1.37688, lng: 103.84729 } },
+        { location: { lat: 1.3718, lng: 103.84778 } },
+        { location: { lat: 1.37589, lng: 103.85562 } },
+        { location: { lat: 1.3718, lng: 103.84778 } },
       ],
       travelMode: google.maps.TravelMode.DRIVING,
       avoidTolls: true,

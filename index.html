@@ -5,34 +5,24 @@
  SPDX-License-Identifier: Apache-2.0
 -->
 <html>
-  <head>
-    <meta name="viewport" 
-    content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, width=device-width"> 
-    <title>Draggable Directions</title>
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
 
-    <link rel="stylesheet" type="text/css" href="/style.css" />
-    <script type="module" src="/index.ts"></script>
-  </head>
-  <body>
-    <div id="container">
-      <div id="map"></div>
-      <div id="sidebar">
-        <p>Total Distance: <span id="total"></span></p>
-        <div id="panel"></div>
-      </div>
-    </div>
+<head>
+  <meta name="viewport"
+    content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, width=device-width">
+  <title>SingPost Route</title>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
 
-    <!-- 
-      The `defer` attribute causes the callback to execute after the full HTML
-      document has been parsed. For non-blocking uses, avoiding race conditions,
-      and consistent behavior across browsers, consider loading using Promises.
-      See https://developers.google.com/maps/documentation/javascript/load-maps-js-api
-      for more information.
-      -->
-    <script
-      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAxMVfUNhCjWneGRvMO2WLAhvT5u7HbfxU&callback=initMap&v=weekly&language=en"
-      defer
-    ></script>
-  </body>
+  <link rel="stylesheet" type="text/css" href="/style.css" />
+  <script type="module" src="/index.ts"></script>
+</head>
+
+<body>
+  <header id="header">
+    <h1 class="logo"><a href="/mainStart.do" title="메인으로"><img style="height: 36px;" src="/img/ci.png" alt="ci"></a>
+    </h1>
+    <h1> index page</h1>
+  </header>
+  <a href="./route.html">route</a>
+</body>
+
 </html>

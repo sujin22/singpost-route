@@ -5,36 +5,45 @@
  SPDX-License-Identifier: Apache-2.0
 -->
 <html>
-  <head>
-    <meta name="viewport" 
-    content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, width=device-width"> 
-    <title>Draggable Directions</title>
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
 
-    
-    
-    <script type="module" crossorigin src="/singpost-route/assets/index.a5114554.js"></script>
-    <link rel="stylesheet" href="/singpost-route/assets/index.4bca4e67.css">
-  </head>
-  <body>
-    <div id="container">
-      <div id="map"></div>
-      <div id="sidebar">
-        <p>Total Distance: <span id="total"></span></p>
-        <div id="panel"></div>
+<head>
+  <meta name="viewport"
+    content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, width=device-width">
+  <title>SingPost Route</title>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+
+  
+  
+  <script type="module" crossorigin src="/singpost-route/assets/index.7a991a0b.js"></script>
+  <link rel="stylesheet" href="/singpost-route/assets/index.8e4435bf.css">
+</head>
+
+<body>
+  <header id="header">
+    <h1 class="logo"><img style="height: 36px;" src="/singpost-route/assets/ci.4203446c.png" alt="ci"></h1>
+  </header>
+  <!-- <a href="./route.html">route</a> -->
+
+
+  <nav class="tree-nav">
+    <details class="tree-nav__item is-expandable">
+      <summary class="tree-nav__item-title">220424</summary>
+      <div class="tree-nav__item">
+        <a class="tree-nav__item-title"  href="./route.html">CD03</a>
+        <a class="tree-nav__item-title"  href="./route.html">CD04</a>
       </div>
-    </div>
+    </details>
 
-    <!-- 
-      The `defer` attribute causes the callback to execute after the full HTML
-      document has been parsed. For non-blocking uses, avoiding race conditions,
-      and consistent behavior across browsers, consider loading using Promises.
-      See https://developers.google.com/maps/documentation/javascript/load-maps-js-api
-      for more information.
-      -->
-    <script
-      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAxMVfUNhCjWneGRvMO2WLAhvT5u7HbfxU&callback=initMap&v=weekly&language=en"
-      defer
-    ></script>
-  </body>
+    <details class="tree-nav__item is-expandable">
+      <summary class="tree-nav__item-title">220425</summary>
+      <div class="tree-nav__item">
+        <a class="tree-nav__item-title"  href="./route.html">CD03</a>
+        <a class="tree-nav__item-title"  href="./route.html">CD04</a>
+      </div>
+    </details>
+
+  </nav>
+
+</body>
+
 </html>

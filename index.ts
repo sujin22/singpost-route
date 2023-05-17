@@ -9,7 +9,7 @@ function readCSV(url: string): Promise<Map<string, string[]>> {
       return response.text();
     })
     .then((csvData) => {
-      const { data, errors } = Papa.parse(csvData, { header: true });
+      const { data, errors } = Papa.parse(csvData, { header: true, delimiter: ',' });
       console.log(csvData);
       if (errors.length > 0) {
         const errorMessages = errors.map((error) => error.message).join('\n');

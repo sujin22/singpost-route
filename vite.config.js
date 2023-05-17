@@ -8,4 +8,12 @@ export default defineConfig({
         ? 443
         : undefined,
   },
+  build: {
+    rollupOptions: {
+      input: {
+        main: "/index.html",
+        route: "/route.html",
+      },
+    },
+  },
 });

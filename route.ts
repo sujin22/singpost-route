@@ -3,6 +3,17 @@
  * Copyright 2019 Google LLC. All Rights Reserved.
  * SPDX-License-Identifier: Apache-2.0
  */
+// 현재 URL에서 쿼리 매개변수를 가져오기
+const urlParams = new URLSearchParams(window.location.search);
+
+// "date" 매개변수의 값을 가져오기
+const date = urlParams.get("date");
+
+// "car_id" 매개변수의 값을 가져오기
+const carId = urlParams.get("car_id");
+
+console.log(date); // "220422"
+console.log(carId); // "CA03"
 
 function initMap(): void {
     const map = new google.maps.Map(

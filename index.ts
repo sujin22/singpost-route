@@ -1,118 +1,44 @@
-// /**
-//  * @license
-//  * Copyright 2019 Google LLC. All Rights Reserved.
-//  * SPDX-License-Identifier: Apache-2.0
-//  */
+import Papa from 'papaparse';
 
-// function initMap(): void {
-//   const map = new google.maps.Map(
-//     document.getElementById("map") as HTMLElement,
-//     {
-//       zoom: 4,
-//       center: { lat: 1.31895, lng: 203.89445 },
+function readCSV(url: string): Promise<Map<string, string[]>> {
+  return fetch(url)
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`CSV 읽기 오류: ${response.status} ${response.statusText}`);
+      }
+      return response.text();
+    })
+    .then((csvData) => {
+      const { data, errors } = Papa.parse(csvData, { header: true });
+      console.log(csvData);
+      if (errors.length > 0) {
+        const errorMessages = errors.map((error) => error.message).join('\n');
+        throw new Error(`CSV 파싱 오류:\n${errorMessages}`);
+      }
 
-//     }
-//   );
+      const map = new Map<string, string[]>();
 
-//   const directionsService = new google.maps.DirectionsService();
-//   const directionsRenderer = new google.maps.DirectionsRenderer({
-//     draggable: false,
-//     map,
-//     panel: document.getElementById("panel") as HTMLElement,
-//   });
+      data.forEach((record) => {
+        const { ORDER_DATE, CAR_NUM } = record;
 
-//   directionsRenderer.addListener("directions_changed", () => {
-//     const directions = directionsRenderer.getDirections();
+        if (!map.has(ORDER_DATE)) {
+          map.set(ORDER_DATE, []);
+        }
 
-//     if (directions) {
-//       computeTotalDistance(directions);
-//     }
-//   });
+        map.get(ORDER_DATE)?.push(CAR_NUM);
+      });
 
-//   displayRoute(
-//     {location: {lat: 1.31895, lng: 103.89445}}, //origin
-//     {location: {lat: 1.31895, lng: 103.89445}}, //destination
-//     directionsService,
-//     directionsRenderer
-//   );
-// }
-
-
-// function displayRoute(
-//   origin: google.maps.Place,
-//   destination: google.maps.Place,
-//   service: google.maps.DirectionsService,
-//   display: google.maps.DirectionsRenderer
-// ) {
-//   service
-//     .route({
-//       origin: origin,
-//       destination: destination,
-//       waypoints: [
-//         { location: { lat: 1.3702, lng: 103.87204 } },
-//         { location: { lat: 1.3702, lng: 103.87204 } },
-//         { location: { lat: 1.37256, lng: 103.87571 } },
-//         { location: { lat: 1.35402, lng: 103.86425 } },
-//         { location: { lat: 1.3718, lng: 103.84778 } },
-//         { location: { lat: 1.3718, lng: 103.84778 } },
-//         { location: { lat: 1.37589, lng: 103.85562 } },
-//         { location: { lat: 1.3718, lng: 103.84778 } },
-//         { location: { lat: 1.3718, lng: 103.84778 } },
-//         { location: { lat: 1.37792, lng: 103.87541 } },
-//         { location: { lat: 1.37688, lng: 103.84729 } },
-//         { location: { lat: 1.37688, lng: 103.84729 } },
-//         { location: { lat: 1.3718, lng: 103.84778 } },
-//         { location: { lat: 1.37589, lng: 103.85562 } },
-//         { location: { lat: 1.3718, lng: 103.84778 } },
-//       ],
-//       travelMode: google.maps.TravelMode.DRIVING,
-//       avoidTolls: true,
-//     })
-//     .then((result: google.maps.DirectionsResult) => {
-//       display.setDirections(result);
-//     })
-//     .catch((e) => {
-//       alert("Could not display directions due to: " + e);
-//     });
-// }
-
-// function computeTotalDistance(result: google.maps.DirectionsResult) {
-//   let total = 0;
-//   const myroute = result.routes[0];
-
-//   if (!myroute) {
-//     return;
-//   }
-
-//   for (let i = 0; i < myroute.legs.length; i++) {
-//     total += myroute.legs[i]!.distance!.value;
-//   }
-
-//   total = total / 1000;
-//   (document.getElementById("total") as HTMLElement).innerHTML = total + " km";
-// }
-
-// declare global {
-//   interface Window {
-//     initMap: () => void;
-//   }
-// }
-// window.initMap = initMap;
-// export {};
-function csvParse() {
-  // const fs = require('fs');
-  // const csv = require('csv-parser');
-
-  const results = [];
-
-  // fs.createReadStream('path/to/your/file.csv')
-  //   .pipe(csv())
-  //   .on('data', (data: any) => {
-  //     // 데이터 처리
-  //     results.push(data);
-  //   })
-  //   .on('end', () => {
-  //     // 데이터 처리 완료 후 수행할 작업
-  //     console.log(results);
-  //   });
+      return map;
+    });
 }
+
+// 사용 예시
+const csvURL = './data.csv'; // 파일 경로에 맞게 수정
+
+readCSV(csvURL)
+  .then((carNumMap) => {
+    console.log(carNumMap);
+  })
+  .catch((error) => {
+    console.error('CSV 읽기 오류:', error);
+  });

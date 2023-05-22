@@ -15,6 +15,12 @@ export default defineConfig({
         main: "./index.html",
         route: "./route.html",
       },
+      output: {
+        manualChunks: {
+          json: ['20230201_00001.json']
+        },
+        assetFileNames: 'assets/[name][extname]',
+      }
     },
   },
 });

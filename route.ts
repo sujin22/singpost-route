@@ -22,25 +22,19 @@ interface Coordinate {
   longitude: number;
 }
 
-function readCSV(url: string): Promise<Coordinate[]> {
+function readJSON(url: string): Promise<Coordinate[]> {
   return fetch(url)
     .then((response) => {
       if (!response.ok) {
-        throw new Error(`CSV 읽기 오류: ${response.status} ${response.statusText}`);
+        throw new Error(`JSON 읽기 오류: ${response.status} ${response.statusText}`);
       }
-      return response.text();
+      return response.json();
     })
-    .then((csvData) => {
-      const { data, errors } = Papa.parse(csvData, { header: true, delimiter: ',', skipEmptyLines: true });
-      // console.log(csvData);
-      if (errors.length > 0) {
-        const errorMessages = errors.map((error) => error.message).join('\n');
-        throw new Error(`CSV 파싱 오류:\n${errorMessages}`);
-      }
+    .then((jsonData) => {
+      
+    const coordinateList: Coordinate[] = [];
 
-      const coordinateList: Coordinate[] = [];
-
-      data.forEach((record) => {
+    jsonData.forEach((record) => {
         const { ORDER_DATE, CAR_NUM, Y, X } = record;
 
         if (ORDER_DATE != date || CAR_NUM != carId) {
@@ -63,14 +57,8 @@ function readCSV(url: string): Promise<Coordinate[]> {
       return coordinateList;
     });
 }
-
-
-//csv 읽어오기
-// const csvURL = './data.csv'; // 파일 경로
-// const csvURL = '/20230201_000000000001_result_df_postprocessed.csv';
-const csvURL = './20230201_000000000001_result_df_postprocessed.csv';
-// const dataList: Coordinate[] = [];
-readCSV(csvURL)
+const jsonURL = '20230201_00001.json'; // JSON 파일 경로
+readJSON(jsonURL)
   .then((list) => {
     // console.log(list);
   
@@ -93,8 +81,6 @@ readCSV(csvURL)
         panel: document.getElementById("panel") as HTMLElement,
       });
     
-    
-      
       directionsRenderer.addListener("directions_changed", () => {
         const directions = directionsRenderer.getDirections();
     
@@ -111,13 +97,8 @@ readCSV(csvURL)
     initMap();
   })
   .catch((error) => {
-    console.error('CSV 읽기 오류:', error);
+    console.error('JSON 읽기 오류:', error);
   });
-
-  
-
-
-
 
 function displayRoute(
   list: Coordinate[],
@@ -175,7 +156,5 @@ declare global {
   }
 }
 // window.initMap = initMap;
-
-
 
 export { };

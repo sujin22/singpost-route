@@ -34,7 +34,7 @@ function readCSV(url: string): Promise<Map<string, Set<string>>> {
 
   function generateElements(map: Map<string, Set<string>>): DocumentFragment{
 
-    const BASE_URL = './route.html?date=220422&car_id=CD03';
+    const BASE_URL = './route.html?';
     const fragment = document.createDocumentFragment();
 
     map.forEach((val, key, mapObject) => {
@@ -55,7 +55,7 @@ function readCSV(url: string): Promise<Map<string, Set<string>>> {
         //car link
       const link = document.createElement('a');
       link.className = 'tree-nav__item';
-      link.href = BASE_URL+'date='+key+'car_id='+value1;
+      link.href = BASE_URL+'date='+key+'&car_id='+value1;
       link.textContent = value1;//차량 번호 추가
       div.appendChild(link);
       })

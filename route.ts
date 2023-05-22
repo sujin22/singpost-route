@@ -1,3 +1,4 @@
+import Papa from 'papaparse';
 /**
  * @license
  * Copyright 2019 Google LLC. All Rights Reserved.
@@ -12,102 +13,168 @@ const date = urlParams.get("date");
 // "car_id" 매개변수의 값을 가져오기
 const carId = urlParams.get("car_id");
 
-console.log(date); // "220422"
-console.log(carId); // "CA03"
+console.log("date: " + date); // "220422"
+console.log("carID : " + carId); // "CA03"
 
-function initMap(): void {
-    const map = new google.maps.Map(
-      document.getElementById("map") as HTMLElement,
-      {
-        zoom: 4,
-        center: { lat: 1.31895, lng: 203.89445 },
-  
+
+interface Coordinate {
+  latitude: number;
+  longitude: number;
+}
+
+function readCSV(url: string): Promise<Coordinate[]> {
+  return fetch(url)
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`CSV 읽기 오류: ${response.status} ${response.statusText}`);
       }
-    );
-  
-    const directionsService = new google.maps.DirectionsService();
-    const directionsRenderer = new google.maps.DirectionsRenderer({
-      draggable: false,
-      map,
-      panel: document.getElementById("panel") as HTMLElement,
-    });
-  
-    directionsRenderer.addListener("directions_changed", () => {
-      const directions = directionsRenderer.getDirections();
-  
-      if (directions) {
-        computeTotalDistance(directions);
+      return response.text();
+    })
+    .then((csvData) => {
+      const { data, errors } = Papa.parse(csvData, { header: true, delimiter: ',', skipEmptyLines: true });
+      // console.log(csvData);
+      if (errors.length > 0) {
+        const errorMessages = errors.map((error) => error.message).join('\n');
+        throw new Error(`CSV 파싱 오류:\n${errorMessages}`);
       }
-    });
-  
-    displayRoute(
-      {location: {lat: 1.31895, lng: 103.89445}}, //origin
-      {location: {lat: 1.31895, lng: 103.89445}}, //destination
-      directionsService,
-      directionsRenderer
-    );
-  }
-  
-  
-  function displayRoute(
-    origin: google.maps.Place,
-    destination: google.maps.Place,
-    service: google.maps.DirectionsService,
-    display: google.maps.DirectionsRenderer
-  ) {
-    service
-      .route({
-        origin: origin,
-        destination: destination,
-        waypoints: [
-          { location: { lat: 1.3702, lng: 103.87204 } },
-          { location: { lat: 1.3702, lng: 103.87204 } },
-          { location: { lat: 1.37256, lng: 103.87571 } },
-          { location: { lat: 1.35402, lng: 103.86425 } },
-          { location: { lat: 1.3718, lng: 103.84778 } },
-          { location: { lat: 1.3718, lng: 103.84778 } },
-          { location: { lat: 1.37589, lng: 103.85562 } },
-          { location: { lat: 1.3718, lng: 103.84778 } },
-          { location: { lat: 1.3718, lng: 103.84778 } },
-          { location: { lat: 1.37792, lng: 103.87541 } },
-          { location: { lat: 1.37688, lng: 103.84729 } },
-          { location: { lat: 1.37688, lng: 103.84729 } },
-          { location: { lat: 1.3718, lng: 103.84778 } },
-          { location: { lat: 1.37589, lng: 103.85562 } },
-          { location: { lat: 1.3718, lng: 103.84778 } },
-        ],
-        travelMode: google.maps.TravelMode.DRIVING,
-        avoidTolls: true,
-      })
-      .then((result: google.maps.DirectionsResult) => {
-        display.setDirections(result);
-      })
-      .catch((e) => {
-        alert("Could not display directions due to: " + e);
+
+      const coordinateList: Coordinate[] = [];
+
+      data.forEach((record) => {
+        const { ORDER_DATE, CAR_NUM, Y, X } = record;
+
+        if (ORDER_DATE != date || CAR_NUM != carId) {
+          return;
+        }
+
+        const latitude = parseFloat(Y);
+        const longitude = parseFloat(X);
+
+        if (!isNaN(latitude) && !isNaN(longitude)) {
+          const coordinate: Coordinate = {
+            latitude,
+            longitude,
+          };
+
+          coordinateList.push(coordinate);
+        }
       });
-  }
+
+      return coordinateList;
+    });
+}
+
+
+//csv 읽어오기
+// const csvURL = './data.csv'; // 파일 경로
+const csvURL = './20230201_000000000001_result_df_postprocessed.csv';
+// const dataList: Coordinate[] = [];
+readCSV(csvURL)
+  .then((list) => {
+    // console.log(list);
   
-  function computeTotalDistance(result: google.maps.DirectionsResult) {
-    let total = 0;
-    const myroute = result.routes[0];
-  
-    if (!myroute) {
-      return;
+    //TODO: route로 map 핀 찍기 & 경로 출력
+    // dataList.push(...list);
+    function initMap(): void {
+      const map = new google.maps.Map(
+        document.getElementById("map") as HTMLElement,
+        {
+          zoom: 4,
+          // center: { lat: 1.31895, lng: 203.89445 },
+    
+        }
+      );
+      
+      const directionsService = new google.maps.DirectionsService();
+      const directionsRenderer = new google.maps.DirectionsRenderer({
+        draggable: false,
+        map,
+        panel: document.getElementById("panel") as HTMLElement,
+      });
+    
+    
+      
+      directionsRenderer.addListener("directions_changed", () => {
+        const directions = directionsRenderer.getDirections();
+    
+        if (directions) {
+          computeTotalDistance(directions);
+        }
+      });
+      //마커 위치 지정(출발지, 도착지)
+      // console.log(list.length);
+      // console.log(list);
+
+      displayRoute(list, directionsService, directionsRenderer);
     }
+    initMap();
+  })
+  .catch((error) => {
+    console.error('CSV 읽기 오류:', error);
+  });
+
   
-    for (let i = 0; i < myroute.legs.length; i++) {
-      total += myroute.legs[i]!.distance!.value;
-    }
-  
-    total = total / 1000;
-    (document.getElementById("total") as HTMLElement).innerHTML = total + " km";
+
+
+
+
+function displayRoute(
+  list: Coordinate[],
+  service: google.maps.DirectionsService,
+  display: google.maps.DirectionsRenderer
+) {
+  const waypoints: google.maps.DirectionsWaypoint[] = [];
+  // Coordinate 배열을 순회하며 Place 객체 생성 및 배열에 추가
+  list.slice(1, list.length - 1).forEach((coordinate: Coordinate) => {
+    const waypoint: google.maps.DirectionsWaypoint = {
+      location: new google.maps.LatLng(coordinate.latitude, coordinate.longitude) // 위도와 경도로 LatLng 객체 생성
+    };
+    waypoints.push(waypoint);
+  });
+  console.log(list);
+  console.log('latitude: ' + list[0]);
+
+
+
+  service
+    .route({
+      origin: { lat: list[0].latitude, lng: list[0].longitude },
+      destination: { lat: list[list.length - 1].latitude, lng: list[list.length - 1].longitude },
+      waypoints: waypoints,
+      travelMode: google.maps.TravelMode.DRIVING,
+      avoidTolls: true,
+    })
+    .then((result: google.maps.DirectionsResult) => {
+      display.setDirections(result);
+    })
+    .catch((e) => {
+      alert("Could not display directions due to: " + e);
+    });
+}
+
+function computeTotalDistance(result: google.maps.DirectionsResult) {
+  let total = 0;
+  const myroute = result.routes[0];
+
+  if (!myroute) {
+    return;
   }
-  
-  declare global {
-    interface Window {
-      initMap: () => void;
-    }
+
+  for (let i = 0; i < myroute.legs.length; i++) {
+    total += myroute.legs[i]!.distance!.value;
   }
-  window.initMap = initMap;
-  export {};
-  
+
+  total = total / 1000;
+  (document.getElementById("total") as HTMLElement).innerHTML = total + " km";
+}
+
+declare global {
+  interface Window {
+    initMap: () => void;
+  }
+}
+// window.initMap = initMap;
+
+
+
+export { };

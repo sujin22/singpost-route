@@ -67,7 +67,8 @@ function readCSV(url: string): Promise<Coordinate[]> {
 
 //csv 읽어오기
 // const csvURL = './data.csv'; // 파일 경로
-const csvURL = './20230201_000000000001_result_df_postprocessed.csv';
+// const csvURL = '/20230201_000000000001_result_df_postprocessed.csv';
+const csvURL = './static/20230201_000000000001_result_df_postprocessed.csv';
 // const dataList: Coordinate[] = [];
 readCSV(csvURL)
   .then((list) => {

@@ -22,25 +22,19 @@ interface Coordinate {
   longitude: number;
 }
 
-function readCSV(url: string): Promise<Coordinate[]> {
+function readJSON(url: string): Promise<Coordinate[]> {
   return fetch(url)
     .then((response) => {
       if (!response.ok) {
-        throw new Error(`CSV 읽기 오류: ${response.status} ${response.statusText}`);
+        throw new Error(`JSON 읽기 오류: ${response.status} ${response.statusText}`);
       }
-      return response.text();
+      return response.json();
     })
-    .then((csvData) => {
-      const { data, errors } = Papa.parse(csvData, { header: true, delimiter: ',', skipEmptyLines: true });
-      // console.log(csvData);
-      if (errors.length > 0) {
-        const errorMessages = errors.map((error) => error.message).join('\n');
-        throw new Error(`CSV 파싱 오류:\n${errorMessages}`);
-      }
+    .then((jsonData) => {
+      
+    const coordinateList: Coordinate[] = [];
 
-      const coordinateList: Coordinate[] = [];
-
-      data.forEach((record) => {
+    jsonData.forEach((record) => {
         const { ORDER_DATE, CAR_NUM, Y, X } = record;
 
         if (ORDER_DATE != date || CAR_NUM != carId) {
@@ -63,61 +57,22 @@ function readCSV(url: string): Promise<Coordinate[]> {
       return coordinateList;
     });
 }
-
-
-//csv 읽어오기
-// const csvURL = './data.csv'; // 파일 경로
-// const csvURL = '/20230201_000000000001_result_df_postprocessed.csv';
-const csvURL = './20230201_000000000001_result_df_postprocessed.csv';
-// const dataList: Coordinate[] = [];
-readCSV(csvURL)
+const jsonURL = '/singpost-route/20230201_00001.json'; // JSON 파일 경로
+var dataList;
+readJSON(jsonURL)
   .then((list) => {
     // console.log(list);
   
     //TODO: route로 map 핀 찍기 & 경로 출력
     // dataList.push(...list);
-    function initMap(): void {
-      const map = new google.maps.Map(
-        document.getElementById("map") as HTMLElement,
-        {
-          zoom: 4,
-          // center: { lat: 1.31895, lng: 203.89445 },
-    
-        }
-      );
-      
-      const directionsService = new google.maps.DirectionsService();
-      const directionsRenderer = new google.maps.DirectionsRenderer({
-        draggable: false,
-        map,
-        panel: document.getElementById("panel") as HTMLElement,
-      });
-    
-    
-      
-      directionsRenderer.addListener("directions_changed", () => {
-        const directions = directionsRenderer.getDirections();
-    
-        if (directions) {
-          computeTotalDistance(directions);
-        }
-      });
-      //마커 위치 지정(출발지, 도착지)
-      // console.log(list.length);
-      // console.log(list);
 
-      displayRoute(list, directionsService, directionsRenderer);
-    }
+    dataList = list;
+    
     initMap();
   })
   .catch((error) => {
-    console.error('CSV 읽기 오류:', error);
+    console.error('JSON 읽기 오류:', error);
   });
-
-  
-
-
-
 
 function displayRoute(
   list: Coordinate[],
@@ -169,13 +124,42 @@ function computeTotalDistance(result: google.maps.DirectionsResult) {
   (document.getElementById("total") as HTMLElement).innerHTML = total + " km";
 }
 
+function initMap(): void {
+  const map = new google.maps.Map(
+    document.getElementById("map") as HTMLElement,
+    {
+      zoom: 4,
+      // center: { lat: 1.31895, lng: 203.89445 },
+
+    }
+  );
+  
+  const directionsService = new google.maps.DirectionsService();
+  const directionsRenderer = new google.maps.DirectionsRenderer({
+    draggable: false,
+    map,
+    panel: document.getElementById("panel") as HTMLElement,
+  });
+
+  directionsRenderer.addListener("directions_changed", () => {
+    const directions = directionsRenderer.getDirections();
+
+    if (directions) {
+      computeTotalDistance(directions);
+    }
+  });
+  //마커 위치 지정(출발지, 도착지)
+  // console.log(list.length);
+  // console.log(list);
+
+  displayRoute(dataList, directionsService, directionsRenderer);
+}
+
 declare global {
   interface Window {
     initMap: () => void;
   }
 }
-// window.initMap = initMap;
-
-
+window.initMap = initMap;
 
 export { };

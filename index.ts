@@ -1,24 +1,17 @@
 import Papa from 'papaparse';
 
-function readCSV(url: string): Promise<Map<string, Set<string>>> {
+function readJSON(url): Promise<Map<string, Set<string>>> {
   return fetch(url)
     .then((response) => {
       if (!response.ok) {
-        throw new Error(`CSV 읽기 오류: ${response.status} ${response.statusText}`);
+        throw new Error(`JSON 읽기 오류: ${response.status} ${response.statusText}`);
       }
-      return response.text();
+      return response.json();
     })
-    .then((csvData) => {
-      const { data, errors } = Papa.parse(csvData, { header: true, delimiter: ',', skipEmptyLines: true });
-      // console.log(csvData);
-      if (errors.length > 0) {
-        const errorMessages = errors.map((error) => error.message).join('\n');
-        throw new Error(`CSV 파싱 오류:\n${errorMessages}`);
-      }
+    .then((jsonData) => {
+      const map = new Map();
 
-      const map = new Map<string, Set<string>>();
-
-      data.forEach((record) => {
+      jsonData.forEach((record) => {
         const { ORDER_DATE, CAR_NUM } = record;
 
         if (!map.has(ORDER_DATE)) {
@@ -32,65 +25,66 @@ function readCSV(url: string): Promise<Map<string, Set<string>>> {
     });
 }
 
-  function generateElements(map: Map<string, Set<string>>): DocumentFragment{
 
-    const BASE_URL = './route.html?';
-    const fragment = document.createDocumentFragment();
+function generateElements(map: Map<string, Set<string>>): DocumentFragment {
 
-    map.forEach((val, key, mapObject) => {
-      //expanable
-      const details = document.createElement('details');
-      details.className = 'tree-nav__item is-expandable';
+  const BASE_URL = './route.html?';
+  const fragment = document.createDocumentFragment();
 
-      //date
-      const summary = document.createElement('summary');
-      summary.className = 'tree-nav__item-title';
-      summary.textContent = key; //날짜 추가
+  map.forEach((val, key, mapObject) => {
+    //expanable
+    const details = document.createElement('details');
+    details.className = 'tree-nav__item is-expandable';
 
-      //link container
-      const div = document.createElement('div');
-      div.className = 'tree-nav__item';
-  
-      val.forEach((value1, value2, setObject)=>{
-        //car link
+    //date
+    const summary = document.createElement('summary');
+    summary.className = 'tree-nav__item-title';
+    summary.textContent = key; //날짜 추가
+
+    //link container
+    const div = document.createElement('div');
+    div.className = 'tree-nav__item';
+
+    val.forEach((value1, value2, setObject) => {
+      //car link
       const link = document.createElement('a');
       link.className = 'tree-nav__item';
-      link.href = BASE_URL+'date='+key+'&car_id='+value1;
+      link.href = BASE_URL + 'date=' + key + '&car_id=' + value1;
       link.textContent = value1;//차량 번호 추가
       div.appendChild(link);
-      })
-      
-      details.appendChild(div);
-      details.appendChild(summary);
-      fragment.appendChild(details);
-      
-      // console.log(`${val}: ${key}`);
-     })
-    
+    })
 
-    return fragment;
-  }
+    details.appendChild(div);
+    details.appendChild(summary);
+    fragment.appendChild(details);
 
-//csv 읽어오기
-// const csvURL = './data.csv'; // 파일 경로
-const csvURL = './20230201_000000000001_result_df_postprocessed.csv';
+    // console.log(`${val}: ${key}`);
+  })
 
-readCSV(csvURL)
+
+  return fragment;
+}
+
+
+const jsonURL = '/singpost-route/20230201_00001.json'; // JSON 파일 경로
+
+readJSON(jsonURL)
   .then((carNumMap) => {
+    // 데이터 처리 로직
     console.log(carNumMap);
 
     //TODO: date List로 element 생성
     const summaries = generateElements(carNumMap);
 
     const container = document.querySelector('.tree-nav');
-    if(container){
+    if (container) {
       container.appendChild(summaries);
-    }else{
+    } else {
       console.error('Container Element Not Found');
     }
   })
   .catch((error) => {
-    console.error('CSV 읽기 오류:', error);
+    console.error('JSON 읽기 오류:', error);
   });
 
 

@@ -1,6 +1,7 @@
 
 node_modules
-dist/
+dist/*.js
+dist/assets/*.js
 package-lock.json
 
 #google api key

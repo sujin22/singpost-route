@@ -23,7 +23,7 @@ export default defineConfig({
       async writeBundle() {
         const fs = await import("fs");
         const path = await import("path");
-        const fromPath = path.resolve(__dirname, "20230201_00001.json");
+        const fromPath = path.resolve(__dirname, "input-data/20230201_00001.json");
         const toPath = path.resolve(__dirname, "dist", "20230201_00001.json");
         fs.copyFileSync(fromPath, toPath);
       },

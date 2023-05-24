@@ -66,7 +66,7 @@ function generateElements(map: Map<string, Set<string>>): DocumentFragment {
 }
 
 
-const jsonURL = '/singpost-route/input-data/20230201_00001.json'; // JSON 파일 경로
+const jsonURL = '/singpost-route/20230201_00001.json'; // JSON 파일 경로
 
 readJSON(jsonURL)
   .then((carNumMap) => {

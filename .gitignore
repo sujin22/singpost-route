@@ -1,9 +1,10 @@
 
 node_modules
-dist
+dist/
 package-lock.json
 
 #google api key
 .env
 
-#
+#md
+cloud_shell_instructions.md

@@ -57,7 +57,7 @@ function readJSON(url: string): Promise<Coordinate[]> {
       return coordinateList;
     });
 }
-const jsonURL = '/singpost-route/20230201_00001.json'; // JSON 파일 경로
+const jsonURL = '/singpost-route/20230201_001.json'; // JSON 파일 경로
 var dataList;
 readJSON(jsonURL)
   .then((list) => {

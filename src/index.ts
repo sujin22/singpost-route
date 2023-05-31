@@ -64,7 +64,7 @@ function generateJSONElements(jsonList: Array<string>): DocumentFragment{
     //date
     const summary = document.createElement('summary');
     summary.className = 'tree-nav__item-title';
-    summary.textContent = val; //날짜 추가
+    summary.textContent = val.replace(".json",""); //날짜 추가
     console.log(val);
   
     //link container
@@ -77,7 +77,7 @@ function generateJSONElements(jsonList: Array<string>): DocumentFragment{
     const link = document.createElement('a');
     link.className = 'tree-nav__item';
     link.href = BASE_URL + 'date=' + val.substring(0, 8) + '&car_id=' + "CE03";
-    link.textContent = "All Route";//차량 번호 추가
+    link.textContent = "All Route";//
     div.appendChild(link);
     
 

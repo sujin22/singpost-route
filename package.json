@@ -18,7 +18,7 @@
     "test": "tsc --no-emit",
     "preview": "vite preview",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist"
+    "deploy": "node deploy-files.js && gh-pages -d dist"
   },
   "devDependencies": {
     "@types/csv-parse": "^1.2.2",

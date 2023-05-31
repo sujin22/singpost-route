@@ -1,5 +1,21 @@
 import Papa from 'papaparse';
 
+
+function readJSONList(){
+  fetch('https://api.github.com/repos/sujin22/singpost-route/data/input-data')
+  .then(response => response.json())
+  .then(data => {
+    // 파일 목록을 처리하는 로직 작성
+    // data 배열에서 필요한 정보 추출하여 활용
+    console.log(data);
+  })
+  .catch(error => {
+    // 오류 처리
+    console.error('Error:', error);
+  });
+}
+
+
 function readJSON(url): Promise<Map<string, Set<string>>> {
   return fetch(url)
     .then((response) => {
@@ -66,7 +82,7 @@ function generateElements(map: Map<string, Set<string>>): DocumentFragment {
 }
 
 
-const jsonURL = '/singpost-route/20230201_00001.json'; // JSON 파일 경로
+const jsonURL = '/singpost-route/20230201_001.json'; // JSON 파일 경로
 
 readJSON(jsonURL)
   .then((carNumMap) => {

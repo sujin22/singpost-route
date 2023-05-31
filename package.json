@@ -32,9 +32,5 @@
     "vite-plugin-copy": "^0.1.6",
     "webpack": "^5.83.1",
     "webpack-cli": "^5.1.1"
-  },
-  "private": true,
-  "dependencies": {
-    "@octokit/rest": "^19.0.11"
   }
 }

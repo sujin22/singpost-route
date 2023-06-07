@@ -2,6 +2,20 @@
 const fs = require('fs');
 const path = require('path');
 
+//1. google maps key 맵핑
+
+const htmlFilePath = 'dist/route.html';// 배포할 HTML 파일 경로
+
+let html = fs.readFileSync(htmlFilePath, 'utf-8');  // HTML 파일 읽기
+
+// 구글 맵 API 키로 대체
+const googleMapsAPIKey = process.env.GOOGLE_MAP_KEY;
+html = html.replace('__GOOGLE_MAPS_API_KEY__', googleMapsAPIKey);
+
+// 대체된 내용을 다시 파일에 쓰기
+fs.writeFileSync(htmlFilePath, html, 'utf-8');
+
+//2. json, html 파일 deploy
 const sourceWebDataDirectory = './data/all-route'; // 배포할 파일들이 위치한 디렉토리 경로
 const deployWebDataDirectory = './dist/data/all-route'; // 배포할 경로
 

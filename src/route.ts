@@ -7,13 +7,13 @@ import Papa from 'papaparse';
 // 현재 URL에서 쿼리 매개변수를 가져오기
 const urlParams = new URLSearchParams(window.location.search);
 
-// "date" 매개변수의 값을 가져오기
-const date = urlParams.get("date");
+// "fname" 매개변수의 값을 가져오기
+const fname = urlParams.get("fname");
 
 // "car_id" 매개변수의 값을 가져오기
 const carId = urlParams.get("car_id");
 
-console.log("date: " + date); // "220422"
+console.log("fname: " + fname); // "20230530_1.json"
 console.log("carID : " + carId); // "CA03"
 
 
@@ -34,10 +34,10 @@ function readJSON(url: string): Promise<Coordinate[]> {
       
     const coordinateList: Coordinate[] = [];
 
-    jsonData.forEach((record) => {
-        const { ORDER_DATE, CAR_NUM, Y, X } = record;
+    jsonData.result.forEach((record) => {
+        const {CAR_NUM, Y, X } = record;
 
-        if (ORDER_DATE != date || CAR_NUM != carId) {
+        if (CAR_NUM != carId) {
           return;
         }
 
@@ -57,7 +57,8 @@ function readJSON(url: string): Promise<Coordinate[]> {
       return coordinateList;
     });
 }
-const jsonURL = '/singpost-route/20230201_001.json'; // JSON 파일 경로
+
+const jsonURL = '/singpost-route/data/input-data/'+fname; // JSON 파일 경로
 var dataList;
 readJSON(jsonURL)
   .then((list) => {

@@ -29,7 +29,7 @@ function readJSONList(): Promise<Array<string>> {
 }
 
 
-function readJSON(url): Promise<Map<string, Set<string>>> {
+function readJSON(url): Promise<Set<string>> {
   return fetch(url)
     .then((response) => {
       if (!response.ok) {
@@ -38,25 +38,20 @@ function readJSON(url): Promise<Map<string, Set<string>>> {
       return response.json();
     })
     .then((jsonData) => {
-      const map = new Map();
+      // const map = new Map();
+      const carList = new Set<string>();
 
-      jsonData.forEach((record) => {
-        const { ORDER_DATE, CAR_NUM } = record;
-
-        if (!map.has(ORDER_DATE)) {
-          map.set(ORDER_DATE, new Set());
-        }
-
-        map.get(ORDER_DATE)?.add(CAR_NUM);
+      jsonData.result.forEach((record) => {
+        carList.add(record.CAR_NUM);
       });
 
-      return map;
+      return carList;
     });
 }
 
 function generateJSONElements(jsonList: Array<string>): DocumentFragment{
   const fragment = document.createDocumentFragment();
-  jsonList.forEach((val) => {
+  jsonList.forEach((fname) => {
     //expanable
     const details = document.createElement('details');
     details.className = 'tree-nav__item is-expandable';
@@ -64,8 +59,30 @@ function generateJSONElements(jsonList: Array<string>): DocumentFragment{
     //date
     const summary = document.createElement('summary');
     summary.className = 'tree-nav__item-title';
-    summary.textContent = val.replace(".json",""); //날짜 추가
-    console.log(val);
+    summary.textContent = fname.replace(".json",""); //날짜 추가
+    console.log('fname: ' + fname);
+
+    //클릭 시 동작하는 이벤트 리스너 추가
+    summary.addEventListener('click', function(){
+      const jsonURL = '/singpost-route/data/input-data/'+fname; // JSON 파일 경로
+      console.log('jsonUrl: '+jsonURL);
+      if(!generatedSet.has(fname)){
+        //클릭된 json파일 읽는다.
+        readJSON(jsonURL)
+        .then((carList) => {
+          // 데이터 처리 로직
+          console.log(carList);
+
+          generateDataElements(fname, carList);
+        })
+        .catch((error) => {
+          console.error('JSON 읽기 오류:', error);
+        });
+        
+        generatedSet.add(fname);
+      }
+
+    });
   
     //link container
     const div = document.createElement('div');
@@ -76,11 +93,10 @@ function generateJSONElements(jsonList: Array<string>): DocumentFragment{
     const BASE_URL = "./data/all-route/"
     const link = document.createElement('a');
     link.className = 'tree-nav__item';
-    const url = BASE_URL+val.replace("json", "html");
+    const url = BASE_URL + fname.replace("json", "html");
     console.log("href url: "+ url);
-    // link.href = BASE_URL +val.substring(0, 8)+".html";
     link.href = url;
-    link.textContent = "All Route";//
+    link.textContent = "All Route";
     div.appendChild(link);
     
 
@@ -91,46 +107,40 @@ function generateJSONElements(jsonList: Array<string>): DocumentFragment{
 
   return fragment;
 }
-function generateDataElements(map: Map<string, Set<string>>): DocumentFragment {
+function generateDataElements(fname:string, carList:Set<string>) {
 
   const BASE_URL = './route.html?';
-  const fragment = document.createDocumentFragment();
 
-  map.forEach((val, key, mapObject) => {
-    //expanable
-    const details = document.createElement('details');
-    details.className = 'tree-nav__item is-expandable';
+  const summaryText = fname.replace(".json", ""); //찾으려는 항목
 
-    //date
-    const summary = document.createElement('summary');
-    summary.className = 'tree-nav__item-title';
-    summary.textContent = key; //날짜 추가
-
-    //link container
-    const div = document.createElement('div');
-    div.className = 'tree-nav__item';
-
-    val.forEach((value1, value2, setObject) => {
-      //car link
-      const link = document.createElement('a');
-      link.className = 'tree-nav__item';
-      link.href = BASE_URL + 'date=' + key + '&car_id=' + value1;
-      link.textContent = value1;//차량 번호 추가
-      div.appendChild(link);
-    })
-
-    details.appendChild(div);
-    details.appendChild(summary);
-    fragment.appendChild(details);
-
-    // console.log(`${val}: ${key}`);
-  })
-
-
-  return fragment;
+  const treeNav = document.querySelector('.tree-nav');
+  if (treeNav && treeNav.children) {
+    // tree-nav의 자식 요소들을 순회한다.
+    for (const child of treeNav.children) {
+      if (child.tagName === 'DETAILS') {
+        const summary = child.querySelector('.tree-nav__item-title');
+        if (summary && summary.textContent === summaryText) {
+          // summary의 텍스트가 파일명과 일치하는 경우, div 태그를 찾는다.
+          const div = child.querySelector('.tree-nav__item');
+          if (div) {
+            // 해당 div 요소에 CAR_NUM 링크 요소를 추가함
+            sortCarName(carList).forEach((carNum) => {
+              //car link
+              const link = document.createElement('a');
+              link.className = 'tree-nav__item';
+              link.href = BASE_URL + 'fname=' + fname + '&car_id=' + carNum;
+              link.textContent = carNum;//차량 번호 추가
+              div.appendChild(link);
+            });
+          }
+          break;
+        }
+      }
+    }
+  }
 }
 
-function sortName(fileNames:Array<string>){
+function sortFileName(fileNames:Array<string>){
   fileNames.sort((a, b) => {
     const dateA = parseInt(a.substring(0, 8));
     const numberA = parseInt(a.substring(9, a.lastIndexOf(".")));
@@ -148,10 +158,15 @@ function sortName(fileNames:Array<string>){
   return fileNames;
 }
 
+function sortCarName(carList: Set<string>):Array<string>{
+  return  Array.from(carList).sort();
+}
+
 //json 목록 읽어와 element 생성
+const generatedSet = new Set();
 readJSONList()
   .then(jsonList => {
-    const fileNames = sortName(jsonList);
+    const fileNames = sortFileName(jsonList);
     const summaries = generateJSONElements(fileNames);
 
     const container = document.querySelector('.tree-nav');
@@ -166,25 +181,8 @@ readJSONList()
     console.error('Error:', error);
   });
 
-const jsonURL = '/singpost-route/20230201_001.json'; // JSON 파일 경로
 
-readJSON(jsonURL)
-  .then((carNumMap) => {
-    // 데이터 처리 로직
-    console.log(carNumMap);
 
-    //TODO: date List로 element 생성
-    const summaries = generateDataElements(carNumMap);
 
-    const container = document.querySelector('.tree-nav');
-    if (container) {
-      container.appendChild(summaries);
-    } else {
-      console.error('Container Element Not Found');
-    }
-  })
-  .catch((error) => {
-    console.error('JSON 읽기 오류:', error);
-  });
 
 

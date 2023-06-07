@@ -1,4 +1,3 @@
-import Papa from 'papaparse';
 /**
  * @license
  * Copyright 2019 Google LLC. All Rights Reserved.

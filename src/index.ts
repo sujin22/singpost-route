@@ -1,6 +1,3 @@
-import Papa from 'papaparse';
-
-
 function readJSONList(): Promise<Array<string>> {
   const owner = 'sujin22';
   const repo = 'singpost-route';

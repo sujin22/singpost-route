@@ -59,7 +59,7 @@ function generateJSONElements(jsonList: Array<string>): DocumentFragment{
     //date
     const summary = document.createElement('summary');
     summary.className = 'tree-nav__item-title';
-    summary.textContent = fname.replace(".json",""); //날짜 추가
+    summary.textContent = fname.replace(".json","");
     console.log('fname: ' + fname);
 
     //클릭 시 동작하는 이벤트 리스너 추가

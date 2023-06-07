@@ -72,11 +72,14 @@ function generateJSONElements(jsonList: Array<string>): DocumentFragment{
     div.className = 'tree-nav__item';
 
     
-    //car link
-    const BASE_URL = "./route.html"
+    //all-route link
+    const BASE_URL = "./data/all-route/"
     const link = document.createElement('a');
     link.className = 'tree-nav__item';
-    link.href = BASE_URL + 'date=' + val.substring(0, 8) + '&car_id=' + "CE03";
+    const url = BASE_URL+val.replace("json", "html");
+    console.log("href url: "+ url);
+    // link.href = BASE_URL +val.substring(0, 8)+".html";
+    link.href = url;
     link.textContent = "All Route";//
     div.appendChild(link);
     

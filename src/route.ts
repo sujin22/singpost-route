@@ -108,9 +108,9 @@ function displayRoute(
       alert("Could not display directions due to: " + e);
     });
 
-  
+  //출발지 마커 
   const marker = new google.maps.Marker({
-    position: { lat: list[list.length - 1].latitude, lng: list[list.length - 1].longitude }, // 마커의 위치
+    position: { lat: list[0].latitude, lng: list[0].longitude }, // 마커의 위치
     map: map, // 마커가 추가될 맵 객체
   });
 
@@ -138,7 +138,7 @@ function changeMarkerColor(marker: google.maps.Marker, color: string) {
   marker.setIcon({
     url: `http://maps.google.com/mapfiles/ms/icons/${color}-dot.png`, // 색상에 따라 마커 아이콘 URL 변경
     scaledSize: new google.maps.Size(32, 32), // 마커 아이콘 크기 지정
-    labelOrigin: new google.maps.Point(16, 12), // 마커 라벨 위치 조정
+    // labelOrigin: new google.maps.Point(16, 12), // 마커 라벨 위치 조정
   });
 }
 

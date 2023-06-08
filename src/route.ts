@@ -7,7 +7,7 @@
 const urlParams = new URLSearchParams(window.location.search);
 
 // "fname" 매개변수의 값을 가져오기
-const fname = urlParams.get("fname");
+const fname = urlParams.get("fname")+".json";
 
 // "car_id" 매개변수의 값을 가져오기
 const carId = urlParams.get("car_id");

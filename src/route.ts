@@ -77,7 +77,8 @@ readJSON(jsonURL)
 function displayRoute(
   list: Coordinate[],
   service: google.maps.DirectionsService,
-  display: google.maps.DirectionsRenderer
+  display: google.maps.DirectionsRenderer,
+  map: google.maps.Map
 ) {
   const waypoints: google.maps.DirectionsWaypoint[] = [];
   // Coordinate 배열을 순회하며 Place 객체 생성 및 배열에 추가
@@ -106,6 +107,15 @@ function displayRoute(
     .catch((e) => {
       alert("Could not display directions due to: " + e);
     });
+
+  
+  const marker = new google.maps.Marker({
+    position: { lat: list[list.length - 1].latitude, lng: list[list.length - 1].longitude }, // 마커의 위치
+    map: map, // 마커가 추가될 맵 객체
+  });
+
+  // 마커 색상 변경
+  changeMarkerColor(marker, 'blue'); // 파란색 마커로 변경
 }
 
 function computeTotalDistance(result: google.maps.DirectionsResult) {
@@ -122,6 +132,14 @@ function computeTotalDistance(result: google.maps.DirectionsResult) {
 
   total = total / 1000;
   (document.getElementById("total") as HTMLElement).innerHTML = total + " km";
+}
+
+function changeMarkerColor(marker: google.maps.Marker, color: string) {
+  marker.setIcon({
+    url: `http://maps.google.com/mapfiles/ms/icons/${color}-dot.png`, // 색상에 따라 마커 아이콘 URL 변경
+    scaledSize: new google.maps.Size(32, 32), // 마커 아이콘 크기 지정
+    labelOrigin: new google.maps.Point(16, 12), // 마커 라벨 위치 조정
+  });
 }
 
 function initMap(): void {
@@ -152,7 +170,7 @@ function initMap(): void {
   // console.log(list.length);
   // console.log(list);
 
-  displayRoute(dataList, directionsService, directionsRenderer);
+  displayRoute(dataList, directionsService, directionsRenderer, map);
 }
 
 declare global {

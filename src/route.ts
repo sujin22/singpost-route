@@ -119,9 +119,10 @@ function displayRoute(
     markerOptions: {
       icon: {
         path: google.maps.SymbolPath.CIRCLE,
-        fillColor: 'blue',
+        fillColor: 'white',
         fillOpacity: 1,
-        strokeWeight: 0,
+        strokeWeight: 3,
+        strokeColor: 'blue',
         scale: 5,
       },
     },

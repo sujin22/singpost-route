@@ -218,7 +218,7 @@ function displayRoute(
         zIndex: 1,
       });
       destinationMarker.addListener('click', () => {
-        const sidebarItem = document.getElementsByClassName("adb-list-item")[index + 1];
+        // const sidebarItem = document.getElementsByClassName("adb-list-item")[index + 1];
       })
       // // 도착지 말풍선 생성
       // geocodeLatLng(destinationMarker.getPosition()!)

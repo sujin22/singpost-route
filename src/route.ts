@@ -217,20 +217,23 @@ function displayRoute(
         },
         zIndex: 1,
       });
-       // 도착지 말풍선 생성
-  geocodeLatLng(destinationMarker.getPosition()!)
-  .then((address) => {
-    const infoWindow = new google.maps.InfoWindow({
-      content: address,
-    });
-    destinationMarker.addListener('click', () => {
-      infoWindow.open(map, destinationMarker);
-      map.setCenter(destinationMarker.getPosition()!);
-    });
-  })
-  .catch((error) => {
-    console.error('Reverse geocoding failed:', error);
-  });
+      destinationMarker.addListener('click', () => {
+        const sidebarItem = document.getElementsByClassName("adb-list-item")[index + 1];
+      })
+      // // 도착지 말풍선 생성
+      // geocodeLatLng(destinationMarker.getPosition()!)
+      //   .then((address) => {
+      //     const infoWindow = new google.maps.InfoWindow({
+      //       content: address,
+      //     });
+      //     destinationMarker.addListener('click', () => {
+      //       infoWindow.open(map, destinationMarker);
+      //       map.setCenter(destinationMarker.getPosition()!);
+      //     });
+      //   })
+      //   .catch((error) => {
+      //     console.error('Reverse geocoding failed:', error);
+      //   });
 
     } else {
       console.error('경로 요청 실패:', status);
